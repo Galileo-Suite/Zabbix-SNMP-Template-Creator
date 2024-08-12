@@ -11,10 +11,10 @@ The main objective of this script is to streamline the creation of Zabbix templa
 Contributions to this project are welcome. Please fork the repository and submit a pull request with your proposed changes.
 
 The features currently on my radar as of 08/12/2024 include:
-[ ] Creating time based anomaly Triggers for numeric Items
-[ ] Creating time based anomaly Trigger Prototypes for numeric Items
-[ ] More robust Discovery Rule creation
-[ ] Creating sub-Discovery Rules when the oids over-flow the snmp_oid field
+- [ ] Creating time based anomaly Triggers for numeric Items
+- [ ] Creating time based anomaly Trigger Prototypes for numeric Items
+- [ ] More robust Discovery Rule creation
+- [ ] Creating sub-Discovery Rules when the oids over-flow the snmp_oid field
 
 ## Prerequisites
 
