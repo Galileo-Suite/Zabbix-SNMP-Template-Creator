@@ -2,10 +2,10 @@ import uuid
 import concurrent.futures
 from typing import List, Dict, Any
 
-from zabbix_objects.snmp_item import SNMPItem
-from zabbix_objects.snmp_trap import SNMPTrap
-from zabbix_objects.tag import Tag
-from zabbix_objects.discovery_rule import DiscoveryRule
+from src.zabbix_objects.snmp_item import SNMPItem
+from src.zabbix_objects.snmp_trap import SNMPTrap
+from src.zabbix_objects.tag import Tag
+from src.zabbix_objects.discovery_rule import DiscoveryRule
 
 class Template:
     def __init__(self, template_info_json: Dict[str, Any], snmp_item_json_list: List[Dict[str, Any]], snmp_trap_json_list: List[Dict[str, Any]], discovery_rule_tables: Dict[str, List[Dict[str, Any]]]):

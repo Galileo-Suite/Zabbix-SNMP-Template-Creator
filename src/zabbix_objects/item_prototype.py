@@ -2,38 +2,34 @@ import re
 import uuid
 from typing import List, Dict, Any, Optional
 
-from utils.config import SNMP_ITEM
+from src.utils.config import ITEM_PROTOTYPE
 
-class SNMPItem:
-    def __init__(self, item_data: Dict[str, Any], template_name: str):
+class ItemPrototype:
+    def __init__(self, item_data: Dict[str, Any], master_item_key: str):
+        self.master_item = master_item_key
         self.mib_module = item_data.get('MIB Module')
         self.oid = item_data.get('OID')
         self.raw_description = item_data.get('Description')
         self.raw_name = item_data.get('Name')
         self.raw_type = item_data.get('Type')
 
-        self.delay = SNMP_ITEM.DELAY
-        self.history = SNMP_ITEM.HISTORY
-        self.type = SNMP_ITEM.TYPE
+        self.history = ITEM_PROTOTYPE.HISTORY
+        self.type = ITEM_PROTOTYPE.TYPE
 
         self.name = self._preprocess_name(self.raw_name)
         self.description = self._preprocess_description()
-        self.key = self._generate_key(template_name)
+        self.key = self._generate_key(master_item_key)
         self.value_type = self._determine_value_type()
-        self.snmp_oid = self._generate_snmp_oid()        
-        self.trends = self._determine_trends(SNMP_ITEM.TRENDS)
+        self.trends = self._determine_trends(ITEM_PROTOTYPE.TRENDS)
 
     @classmethod
-    def generate_snmp_items(cls, snmp_items: List[Dict[str, Any]], template_name: str) -> List['SNMPItem']:
-        return [SNMPItem(item, template_name) for item in snmp_items]
+    def generate_item_prototypes(cls, item_prototypes: List[Dict[str, Any]], template_name: str) -> List['ItemPrototype']:
+        return [ItemPrototype(item, template_name) for item in item_prototypes]
 
     @staticmethod
     def _preprocess_name(raw_name: str) -> str:
         name = re.sub(r'^[^A-Z]*', '', raw_name)
         return re.sub(r'(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])', ' ', name)
-
-    def _generate_snmp_oid(self) -> str:
-        return f'get[{self.oid}]'
 
     def _preprocess_description(self) -> str:
         if not self.raw_description:
@@ -50,9 +46,12 @@ class SNMPItem:
 
         return f"{self.mib_module}::{self.raw_name}\nOID::{self.oid}\n{processed_description}"
 
-    def _generate_key(self, template_name: str) -> str:
+    def _generate_key(self, master_item_key: str) -> str:
+        key_without_walk = master_item_key.replace(".walk", "")
+        master_subkey = key_without_walk.split(".")[-1]
         item_name = self.name.replace(' ', '-').lower()
-        key = f'{template_name.lower().replace(' ', '.')}.{item_name}.get'
+        final_item_name = item_name.replace(master_subkey, "")
+        key = f"{key_without_walk}.{final_item_name.replace("-", "")}"+'[{#SNMPINDEX}]'
 
         if len(key) > 255:
             print(f"Warning: Key '{key}' exceeds 255 characters and will be truncated.")
@@ -79,13 +78,12 @@ class SNMPItem:
             return '0'
 
     def generate_yaml_dict(self) -> Dict[str, Any]:
-        snmp_item_yaml = {
+        item_prototype_yaml = {
             'description': self.description,
             'history': self.history,
-            'delay': self.delay,
             'key': self.key,
+            'master_item': {'key': self.master_item},
             'name': self.name,
-            'snmp_oid': self.oid,
             'trends': self.trends,
             'type': self.type,
             'uuid': uuid.uuid4().hex,
@@ -93,6 +91,6 @@ class SNMPItem:
         }
 
         # Removes None/null values
-        snmp_item_yaml = {k: v for k, v in snmp_item_yaml.items() if v is not None}
+        item_prototype_yaml = {k: v for k, v in item_prototype_yaml.items() if v is not None}
 
-        return snmp_item_yaml
+        return item_prototype_yaml

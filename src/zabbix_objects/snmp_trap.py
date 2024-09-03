@@ -2,7 +2,7 @@ import re
 import uuid
 from typing import List, Dict, Any
 
-from utils.config import SNMP_TRAP
+from src.utils.config import SNMP_TRAP
 
 class SNMPTrap:
     def __init__(self, trap_data: Dict[str, Any], template_name: str):

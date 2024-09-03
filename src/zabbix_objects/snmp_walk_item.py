@@ -1,8 +1,8 @@
 import uuid
 from typing import List, Dict, Any
 
-from zabbix_objects.snmp_item import SNMPItem
-from utils.config import SNMP_WALK_ITEM
+from src.zabbix_objects.snmp_item import SNMPItem
+from src.utils.config import SNMP_WALK_ITEM
 
 class SNMPWalkItem:
     def __init__(self, discovery_rule_table: List[Dict[str, Any]], template_name: str):

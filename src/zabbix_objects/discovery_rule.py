@@ -1,9 +1,9 @@
 import uuid
 from typing import List, Dict, Any
 
-from zabbix_objects.snmp_walk_item import SNMPWalkItem
-from zabbix_objects.item_prototype import ItemPrototype
-from utils.config import DISCOVERY_RULE
+from src.zabbix_objects.snmp_walk_item import SNMPWalkItem
+from src.zabbix_objects.item_prototype import ItemPrototype
+from src.utils.config import DISCOVERY_RULE
 
 class DiscoveryRule:
     def __init__(self, discovery_rule_table: List[Dict[str, Any]], template_name: str):
