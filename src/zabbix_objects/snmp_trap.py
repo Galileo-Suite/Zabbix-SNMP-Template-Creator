@@ -19,7 +19,7 @@ class SNMPTrap:
         self.type = SNMP_TRAP.TYPE
         self.value_type = SNMP_TRAP.VALUE_TYPE
 
-        self.name = self._preprocess_name()
+        self.name = self._preprocess_name(self.raw_name)
         self.key = self._generate_key()
         self.description = self._preprocess_description()
         self.default_trigger = self._generate_default_trigger(template_name)
@@ -30,8 +30,9 @@ class SNMPTrap:
     ) -> List["SNMPTrap"]:
         return [SNMPTrap(trap, template_name) for trap in snmp_traps]
 
-    def _preprocess_name(self) -> str:
-        name = re.sub(r"^[^A-Z]*", "", self.raw_name)
+    @staticmethod
+    def _preprocess_name(raw_name: str) -> str:
+        name = re.sub(r"^[^A-Z]*", "", raw_name)
         name = re.sub(r"(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])", " ", name)
         return name.replace(" Trap", "")
 
@@ -39,19 +40,26 @@ class SNMPTrap:
         if not self.raw_description:
             return f"{self.mib_module}::{self.raw_name}\nOID::{self.oid}\nNo description available."
 
-        paragraphs = self.raw_description.split("\n\n")
-        processed_paragraphs = []
-        for paragraph in paragraphs:
-            paragraph = re.sub(r"\s+", " ", paragraph.strip())
-            paragraph = paragraph.replace("'", '"')
-            processed_paragraphs.append(paragraph)
+        # Process each line individually
+        processed_lines = []
+        for line in self.raw_description.split("\n"):
+            line = re.sub(r"\s+", " ", line.strip())
+            line = line.replace("'", '"')
+            processed_lines.append(line)
 
-        processed_description = "\n".join(processed_paragraphs)
+        # Join the lines, preserving empty lines for paragraph breaks
+        processed_description = "\n".join(processed_lines)
 
+        # Add an extra newline before the processed description
         return f"{self.mib_module}::{self.raw_name}\nOID::{self.oid}\n{processed_description}"
 
     def _generate_key(self) -> str:
-        return f'snmptrap["{self.oid}"]'
+        key = f'snmptrap["{self.oid}"]'
+        if len(key) > 255:
+            print(f"Warning: Key '{key}' exceeds 255 characters and will be truncated.")
+            return key[:255]
+
+        return key
 
     def _generate_default_trigger(self, template_name: str) -> Dict[str, Any]:
         """
