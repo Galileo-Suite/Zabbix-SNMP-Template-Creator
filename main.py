@@ -4,8 +4,9 @@ import time
 from typing import Literal
 
 import yaml
-from utils.mib_validator import MIBValidator
-from zabbix_objects.template import Template
+
+from src.utils.mib_validator import MIBValidator
+from src.zabbix_objects.template import Template
 
 
 def create_all_yaml(
