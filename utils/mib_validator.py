@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 
@@ -232,38 +232,36 @@ class MIBValidator:
     ) -> Dict[str, List[Dict[str, Any]]]:
         """
         Collect discovery rule tables from MIB data.
-
         Args:
             mib_data_json_list (List[Dict[str, Any]]): List of MIB data dictionaries.
-
         Returns:
             Dict[str, List[Dict[str, Any]]]: Dictionary of discovery rule tables keyed by OID.
         """
         # Sort the list of dictionaries by OID
         mib_sorted_by_oid = sorted(mib_data_json_list, key=lambda x: x["OID"])
-
-        discovery_rule_tables = {}
-        current_rule = None
+        discovery_rule_tables: Dict[str, List[Dict[str, Any]]] = {}
+        current_rule: Optional[Dict[str, Any]] = None
 
         for entry in mib_sorted_by_oid:
             if "Table" in entry["Name"] and "SEQUENCE OF" in entry["Type"]:
                 # We've found the beginning entry to create a Discovery Rule
-                if current_rule:
+                if current_rule is not None:
                     # Save the previous rule if it exists
                     discovery_rule_tables[current_rule["OID"]] = current_rule["entries"]
-
                 # Start a new rule
                 current_rule = {"OID": entry["OID"], "entries": [entry]}
-            elif current_rule and entry["OID"].startswith(current_rule["OID"]):
-                current_rule["entries"].append(entry)
-            else:
-                if current_rule:
+            elif current_rule is not None:
+                # Check if the entry's OID starts with the current rule's OID
+                if entry["OID"].startswith(current_rule["OID"]):
+                    current_rule["entries"].append(entry)
+                else:
+                    # If not, we've moved past the current rule
                     # Save the previous rule if it exists
                     discovery_rule_tables[current_rule["OID"]] = current_rule["entries"]
                     current_rule = None
 
         # Make sure we add the last rule if it exists
-        if current_rule:
+        if current_rule is not None:
             discovery_rule_tables[current_rule["OID"]] = current_rule["entries"]
 
         print(f"[{len(discovery_rule_tables)}] Discovery Rules found.")
