@@ -103,7 +103,7 @@ def main() -> None:
         os.makedirs(output_dir)
         print(f"Created directory: {output_dir}")
 
-    with open(output_file, "w") as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         f.write(yaml_template)
 
     print(f"YAML template saved as '{output_file}'")
