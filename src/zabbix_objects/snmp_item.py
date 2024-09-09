@@ -39,16 +39,18 @@ class SNMPItem:
     def _preprocess_description(self) -> str:
         if not self.raw_description:
             return f"{self.mib_module}::{self.raw_name}\nOID::{self.oid}\nNo description available."
-
-        paragraphs = self.raw_description.split('\n\n')
-        processed_paragraphs = []
-        for paragraph in paragraphs:
-            paragraph = re.sub(r'\s+', ' ', paragraph.strip())
-            paragraph = paragraph.replace("'", '"')
-            processed_paragraphs.append(paragraph)
-
-        processed_description = '\n'.join(processed_paragraphs)
-
+        
+        # Process each line individually
+        processed_lines = []
+        for line in self.raw_description.split('\n'):
+            line = re.sub(r'\s+', ' ', line.strip())
+            line = line.replace("'", '"')
+            processed_lines.append(line)
+        
+        # Join the lines, preserving empty lines for paragraph breaks
+        processed_description = '\n'.join(processed_lines)
+        
+        # Add an extra newline before the processed description
         return f"{self.mib_module}::{self.raw_name}\nOID::{self.oid}\n{processed_description}"
 
     def _generate_key(self, template_name: str) -> str:
