@@ -1,8 +1,9 @@
 import re
 import uuid
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 
 from utils.config import SNMP_ITEM
+
 
 class SNMPItem:
     def __init__(self, item_data: Dict[str, Any], template_name: str):
