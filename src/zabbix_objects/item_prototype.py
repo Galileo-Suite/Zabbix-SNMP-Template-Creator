@@ -1,8 +1,9 @@
 import re
 import uuid
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 
 from src.utils.config import ITEM_PROTOTYPE
+
 
 class ItemPrototype:
     def __init__(self, item_data: Dict[str, Any], master_item_key: str):
