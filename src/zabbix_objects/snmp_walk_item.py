@@ -49,7 +49,7 @@ class SNMPWalkItem:
         return f"walk[{oids[2:]}"
 
     def _generate_name(self, snmp_walk_item: Dict[str, Any]) -> str:
-        item_name = SNMPItem._preprocess_name(snmp_walk_item.get("Name"))
+        item_name = SNMPItem.preprocess_name(snmp_walk_item.get("Name"))
         return item_name.replace("Table", "Walk")
 
     def _generate_key(self, item_name: str, template_name: str) -> str:
@@ -60,7 +60,7 @@ class SNMPWalkItem:
 
         if len(key) > 255:
             print(
-                f"Warning: Walk key '{key}' exceeds 255 characters and will be truncated."
+                f"Warning: Walk Key '{key}' exceeds 255 characters and will be truncated."
             )
             return key[:255]
 

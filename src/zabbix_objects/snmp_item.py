@@ -17,7 +17,7 @@ class SNMPItem:
         self.history = SNMP_ITEM.HISTORY
         self.type = SNMP_ITEM.TYPE
 
-        self.name = self._preprocess_name(self.raw_name)
+        self.name = self.preprocess_name(self.raw_name)
         self.description = self._preprocess_description()
         self.key = self._generate_key(template_name)
         self.value_type = self._determine_value_type()
@@ -29,7 +29,7 @@ class SNMPItem:
         return [SNMPItem(item, template_name) for item in snmp_items]
 
     @staticmethod
-    def _preprocess_name(raw_name: str) -> str:
+    def preprocess_name(raw_name: str) -> str:
         name = re.sub(r'^[^A-Z]*', '', raw_name)
         return re.sub(r'(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])', ' ', name)
 
